@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cookie Clicker</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FFF8EE;
+    --caramel: #C8813A;
+    --dark-brown: #3B1F0A;
+    --chocolate: #5C2E00;
+    --gold: #E8A820;
+    --warm-white: #FDF3E3;
+    --shadow-brown: rgba(59,31,10,0.18);
+    --panel-bg: #FEF0D8;
+    --border: #D4A66A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--dark-brown);
+    font-family: 'Lora', Georgia, serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse at 20% 0%, #6B3A1F 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, #4A2210 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  #game {
+    display: grid;
+    grid-template-columns: 280px 1fr 280px;
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 0;
+  }
+
+  /* ── HEADER ── */
+  #header {
+    grid-column: 1 / -1;
+    background: var(--chocolate);
+    border-bottom: 3px solid var(--caramel);
+    padding: 12px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 18px var(--shadow-brown);
+  }
+
+  #header h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 2rem;
+    color: var(--gold);
+    letter-spacing: 0.04em;
+    text-shadow: 2px 2px 0 var(--dark-brown);
+  }
+
+  #header h1 span { color: var(--cream); }
+
+  #stats-bar {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+  }
+
+  .stat-block {
+    text-align: right;
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--caramel);
+    font-style: italic;
+  }
+
+  .stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--cream);
+    font-weight: 700;
+  }
+
+  /* ── LEFT PANEL ── */
+  #left-panel {
+    background: var(--panel-bg);
+    border-right: 2px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 20px;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #left-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--caramel), var(--gold), var(--caramel));
+  }
+
+  #cookie-count-display {
+    text-align: center;
+  }
+
+  #cookie-count {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--chocolate);
+    line-height: 1;
+  }
+
+  #cookie-count-label {
+    font-size: 0.7rem;
+    color: var(--caramel);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-top: 2px;
+  }
+
+  #cps-display {
+    font-size: 0.85rem;
+    color: #8B5E3C;
+    font-style: italic;
+  }
+
+  /* ── COOKIE BUTTON ── */
+  #cookie-btn {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: none;
+    background: none;
+    cursor: pointer;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.08s ease;
+    filter: drop-shadow(0 8px 24px rgba(100,40,0,0.35));
+  }
+
+  #cookie-btn:active { transform: scale(0.91); }
+
+  #cookie-btn:hover #cookie-svg { filter: brightness(1.08); }
+
+  #cookie-svg {
+    width: 160px;
+    height: 160px;
+    transition: filter 0.15s;
+    animation: float 3.5s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-7px); }
+  }
+
+  /* click particles */
+  .particle {
+    position: fixed;
+    pointer-events: none;
+    font-size: 1.3rem;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: var(--chocolate);
+    z-index: 9999;
+    animation: rise 0.9s ease-out forwards;
+  }
+
+  @keyframes rise {
+    0%   { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-80px) scale(0.6); }
+  }
+
+  /* ── UPGRADES ── */
+  #upgrades-section {
+    width: 100%;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--caramel);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+  }
+
+  #upgrades-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .upgrade-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: var(--warm-white);
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s, border-color 0.15s;
+    text-align: left;
+  }
+
+  .upgrade-btn:hover:not(:disabled) {
+    background: #FDEAC8;
+    border-color: var(--caramel);
+    transform: translateX(3px);
+  }
+
+  .upgrade-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .upgrade-btn.owned {
+    background: #E8F5E2;
+    border-color: #7BBF5A;
+  }
+
+  .upgrade-icon { font-size: 1.5rem; flex-shrink: 0; }
+
+  .upgrade-info { flex: 1; min-width: 0; }
+
+  .upgrade-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.82rem;
+    color: var(--dark-brown);
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .upgrade-desc {
+    font-size: 0.68rem;
+    color: #8B6A4A;
+    font-style: italic;
+    line-height: 1.3;
+  }
+
+  .upgrade-cost {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--caramel);
+    white-space: nowrap;
+  }
+
+  /* ── CENTER ── */
+  #center-panel {
+    background: var(--cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+    position: relative;
+    min-height: 400px;
+    overflow: hidden;
+  }
+
+  #center-panel::after {
+    content: '✦ THE GRAND BAKERY ✦';
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    color: rgba(200,129,58,0.4);
+    white-space: nowrap;
+  }
+
+  #milestones {
+    position: absolute;
+    top: 16px;
+    left: 0; right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 0 16px;
+  }
+
+  .milestone-badge {
+    background: var(--gold);
+    color: var(--dark-brown);
+    font-family: 'Playfair Display', serif;
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    animation: badge-pop 0.4s cubic-bezier(0.36,1.56,0.64,1) forwards;
+  }
+
+  @keyframes badge-pop {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* center idle animation area */
+  #bakery-scene {
+    position: relative;
+    width: 240px;
+    height: 160px;
+    margin-bottom: 16px;
+  }
+
+  .baker-emoji {
+    position: absolute;
+    font-size: 2.2rem;
+    animation: baker-idle 2s ease-in-out infinite;
+  }
+
+  @keyframes baker-idle {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-6px) rotate(3deg); }
+  }
+
+  #auto-bakers-display {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    max-width: 320px;
+  }
+
+  .baker-chip {
+    background: var(--panel-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    color: var(--chocolate);
+    font-family: 'Lora', serif;
+    font-style: italic;
+  }
+
+  /* news ticker */
+  #news-ticker {
+    position: absolute;
+    bottom: 32px;
+    left: 0; right: 0;
+    overflow: hidden;
+    height: 22px;
+  }
+
+  #ticker-text {
+    white-space: nowrap;
+    font-size: 0.72rem;
+    color: var(--caramel);
+    font-style: italic;
+    display: inline-block;
+    animation: ticker 22s linear infinite;
+  }
+
+  @keyframes ticker {
+    0% { transform: translateX(100vw); }
+    100% { transform: translateX(-100%); }
+  }
+
+  /* ── RIGHT PANEL ── */
+  #right-panel {
+    background: var(--panel-bg);
+    border-left: 2px solid var(--border);
+    padding: 24px 16px;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  #right-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--caramel), var(--gold), var(--caramel));
+  }
+
+  #buildings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .building-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: var(--warm-white);
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s, border-color 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .building-card:hover:not(:disabled) {
+    background: #FDEAC8;
+    border-color: var(--caramel);
+    transform: translateX(-3px);
+  }
+
+  .building-card:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .building-icon { font-size: 1.7rem; flex-shrink: 0; }
+
+  .building-info { flex: 1; min-width: 0; }
+
+  .building-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.85rem;
+    color: var(--dark-brown);
+    font-weight: 700;
+  }
+
+  .building-owned {
+    font-size: 0.68rem;
+    color: #8B6A4A;
+    font-style: italic;
+  }
+
+  .building-cps {
+    font-size: 0.67rem;
+    color: #A0845C;
+  }
+
+  .building-cost {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--caramel);
+    text-align: right;
+  }
+
+  .building-count-badge {
+    position: absolute;
+    top: 6px; right: 6px;
+    background: var(--chocolate);
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1;
+  }
+
+  /* scrollbar */
+  #right-panel::-webkit-scrollbar { width: 5px; }
+  #right-panel::-webkit-scrollbar-track { background: var(--panel-bg); }
+  #right-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 800px) {
+    #game { grid-template-columns: 1fr; grid-template-rows: auto; }
+    #left-panel, #right-panel { border: none; border-top: 2px solid var(--border); }
+    #header h1 { font-size: 1.3rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="game">
+
+  <!-- HEADER -->
+  <div id="header">
+    <h1>🍪 Cookie <span>Emporium</span></h1>
+    <div id="stats-bar">
+      <div class="stat-block">
+        <div class="stat-label">All Time</div>
+        <div class="stat-value" id="total-display">0</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-label">Per Second</div>
+        <div class="stat-value" id="cps-header">0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEFT PANEL: clicker + upgrades -->
+  <div id="left-panel">
+    <div id="cookie-count-display">
+      <div id="cookie-count">0</div>
+      <div id="cookie-count-label">Cookies in Jar</div>
+      <div id="cps-display">0 per second</div>
+    </div>
+
+    <button id="cookie-btn" title="Click me!">
+      <svg id="cookie-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- outer cookie -->
+        <circle cx="100" cy="100" r="90" fill="#C8813A"/>
+        <!-- texture rings -->
+        <circle cx="100" cy="100" r="85" fill="none" stroke="#B5712E" stroke-width="2" stroke-dasharray="8 6"/>
+        <circle cx="100" cy="100" r="75" fill="#D4924D" opacity="0.5"/>
+        <!-- highlight -->
+        <ellipse cx="72" cy="62" rx="22" ry="14" fill="#E8A356" opacity="0.4" transform="rotate(-25 72 62)"/>
+        <!-- choc chips -->
+        <ellipse cx="68" cy="78" rx="9" ry="7" fill="#3B1A08" transform="rotate(-15 68 78)"/>
+        <ellipse cx="115" cy="65" rx="8" ry="6" fill="#3B1A08" transform="rotate(20 115 65)"/>
+        <ellipse cx="88" cy="120" rx="10" ry="7" fill="#3B1A08" transform="rotate(-10 88 120)"/>
+        <ellipse cx="130" cy="108" rx="8" ry="6" fill="#3B1A08" transform="rotate(30 130 108)"/>
+        <ellipse cx="60" cy="125" rx="7" ry="5" fill="#3B1A08" transform="rotate(10 60 125)"/>
+        <ellipse cx="135" cy="145" rx="9" ry="6" fill="#3B1A08" transform="rotate(-20 135 145)"/>
+        <ellipse cx="105" cy="148" rx="7" ry="5" fill="#4A2210" transform="rotate(5 105 148)"/>
+        <!-- shine dots -->
+        <circle cx="70" cy="76" r="2.5" fill="#7A3F1A" opacity="0.6"/>
+        <circle cx="116" cy="63" r="2" fill="#7A3F1A" opacity="0.6"/>
+        <circle cx="89" cy="118" r="3" fill="#7A3F1A" opacity="0.6"/>
+        <circle cx="131" cy="106" r="2" fill="#7A3F1A" opacity="0.6"/>
+        <!-- edge cracks -->
+        <path d="M 40 70 Q 50 75 42 82" fill="none" stroke="#A06528" stroke-width="1.5" opacity="0.5"/>
+        <path d="M 155 120 Q 162 128 158 138" fill="none" stroke="#A06528" stroke-width="1.5" opacity="0.5"/>
+      </svg>
+    </button>
+
+    <div id="upgrades-section">
+      <div class="section-title">Recipes & Upgrades</div>
+      <div id="upgrades-list"></div>
+    </div>
+  </div>
+
+  <!-- CENTER -->
+  <div id="center-panel">
+    <div id="milestones"></div>
+    <div id="auto-bakers-display"></div>
+    <div id="news-ticker">
+      <span id="ticker-text">🍪 Welcome to the Cookie Emporium! Click the cookie to begin baking… The aroma of fresh cookies fills the air…</span>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL: buildings -->
+  <div id="right-panel">
+    <div class="section-title">Hire & Build</div>
+    <div id="buildings-list"></div>
+  </div>
+
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────────
+let cookies = 0;
+let totalCookies = 0;
+let cookiesPerClick = 1;
+let cookiesPerSecond = 0;
+let lastTick = Date.now();
+
+// Buildings: name, icon, baseCost, baseCPS, description
+const BUILDINGS = [
+  { id: 'cursor',    name: 'Magic Cursor',    icon: '👆', baseCost: 15,       baseCPS: 0.1,  desc: 'Taps the cookie for you.' },
+  { id: 'grandma',  name: 'Grandma',          icon: '👵', baseCost: 100,      baseCPS: 0.5,  desc: 'A kindly old lady who bakes cookies.' },
+  { id: 'farm',     name: 'Cookie Farm',      icon: '🌾', baseCost: 1100,     baseCPS: 4,    desc: 'Grows cookie plants in fertile soil.' },
+  { id: 'mine',     name: 'Cookie Mine',      icon: '⛏️', baseCost: 12000,    baseCPS: 10,   desc: 'Mines deep for chocolate ore.' },
+  { id: 'factory',  name: 'Factory',          icon: '🏭', baseCost: 130000,   baseCPS: 40,   desc: 'Mass-produces cookies by the ton.' },
+  { id: 'bank',     name: 'Cookie Bank',      icon: '🏦', baseCost: 1400000,  baseCPS: 100,  desc: 'Generates cookie income passively.' },
+  { id: 'temple',   name: 'Cookie Temple',    icon: '🛕', baseCost: 20000000, baseCPS: 400,  desc: 'The gods demand tribute in cookies.' },
+  { id: 'wizard',   name: 'Wizard Tower',     icon: '🧙', baseCost: 3e8,      baseCPS: 1666, desc: 'Conjures cookies from thin air.' },
+  { id: 'shipment', name: 'Shipment',         icon: '🚀', baseCost: 5.1e9,    baseCPS: 8888, desc: 'Imports cookies from Cookie Planet.' },
+  { id: 'alchemy',  name: 'Alchemy Lab',      icon: '⚗️', baseCost: 7.5e10,   baseCPS: 47777, desc: 'Turns gold into cookies (superior).' },
+];
+
+const buildingCounts = {};
+BUILDINGS.forEach(b => buildingCounts[b.id] = 0);
+
+// Upgrades
+const UPGRADES = [
+  { id: 'u1',  name: 'Butter Fingers',   icon: '🧈', cost: 100,    desc: '+1 click', owned: false, effect: () => cookiesPerClick += 1 },
+  { id: 'u2',  name: 'Golden Whisk',     icon: '🪄', cost: 500,    desc: '+3 clicks', owned: false, effect: () => cookiesPerClick += 3 },
+  { id: 'u3',  name: 'Secret Recipe',    icon: '📜', cost: 3000,   desc: '×2 all CPS', owned: false, effect: () => recalcCPS(2) },
+  { id: 'u4',  name: 'Choco Ritual',     icon: '🔮', cost: 10000,  desc: '+10 clicks', owned: false, effect: () => cookiesPerClick += 10 },
+  { id: 'u5',  name: 'Grandma\'s Love',  icon: '💝', cost: 50000,  desc: '×3 Grandma CPS', owned: false, effect: () => buildingMultiplier.grandma *= 3 },
+  { id: 'u6',  name: 'Quantum Oven',     icon: '⚡', cost: 200000, desc: '×2 all CPS', owned: false, effect: () => recalcCPS(2) },
+  { id: 'u7',  name: 'Time Warp Dough',  icon: '⏳', cost: 1e6,   desc: '+50 clicks', owned: false, effect: () => cookiesPerClick += 50 },
+  { id: 'u8',  name: 'Dark Matter Mix',  icon: '🌑', cost: 5e7,   desc: '×5 all CPS', owned: false, effect: () => recalcCPS(5) },
+];
+
+const buildingMultiplier = {};
+BUILDINGS.forEach(b => buildingMultiplier[b.id] = 1);
+let globalCPSMultiplier = 1;
+
+const MILESTONES = [
+  { at: 100, label: '100 Cookies!' },
+  { at: 1000, label: '1K Club' },
+  { at: 10000, label: '10K Baker' },
+  { at: 1e6, label: 'Millionaire' },
+  { at: 1e9, label: 'Billionaire' },
+  { at: 1e12, label: 'Trillionaire' },
+  { at: 1e15, label: 'Legendary' },
+];
+const unlockedMilestones = new Set();
+
+const NEWS = [
+  '🍪 Local cookie mysteriously disappears — witnesses claim it "tasted incredible".',
+  '📈 Cookie futures at all-time high. Economists baffled.',
+  '👵 Grandma bakes 10,000th batch, shows no signs of stopping.',
+  '🚀 Scientists discover entire planet made of cookies.',
+  '🔮 Wizard\'s latest spell accidentally turns town square into gingerbread.',
+  '🏭 Factory workers demand more breaks. Cookie production continues.',
+  '🌾 Bumper harvest season: cookie wheat prices collapse.',
+  '⚗️ Alchemist successfully transmutes lead into snickerdoodles.',
+];
+
+// ── HELPERS ───────────────────────────────────────────────────────────────
+function fmt(n) {
+  if (n >= 1e15) return (n / 1e15).toFixed(2) + ' Qu';
+  if (n >= 1e12) return (n / 1e12).toFixed(2) + ' T';
+  if (n >= 1e9)  return (n / 1e9).toFixed(2) + ' B';
+  if (n >= 1e6)  return (n / 1e6).toFixed(2) + ' M';
+  if (n >= 1e3)  return (n / 1e3).toFixed(1) + 'k';
+  return Math.floor(n).toLocaleString();
+}
+
+function buildingCost(b) {
+  return Math.ceil(b.baseCost * Math.pow(1.15, buildingCounts[b.id]));
+}
+
+function recalcCPS(mult) {
+  globalCPSMultiplier *= mult;
+  updateCPS();
+}
+
+function updateCPS() {
+  cookiesPerSecond = 0;
+  BUILDINGS.forEach(b => {
+    cookiesPerSecond += b.baseCPS * buildingCounts[b.id] * buildingMultiplier[b.id] * globalCPSMultiplier;
+  });
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────────────
+function renderAll() {
+  document.getElementById('cookie-count').textContent = fmt(cookies);
+  document.getElementById('total-display').textContent = fmt(totalCookies);
+  document.getElementById('cps-display').textContent = fmt(cookiesPerSecond) + ' per second';
+  document.getElementById('cps-header').textContent = fmt(cookiesPerSecond) + '/s';
+
+  // Buildings
+  const bl = document.getElementById('buildings-list');
+  bl.innerHTML = '';
+  BUILDINGS.forEach(b => {
+    const cost = buildingCost(b);
+    const canAfford = cookies >= cost;
+    const card = document.createElement('button');
+    card.className = 'building-card';
+    card.disabled = !canAfford;
+    const cpsEach = b.baseCPS * buildingMultiplier[b.id] * globalCPSMultiplier;
+    card.innerHTML = `
+      <div class="building-icon">${b.icon}</div>
+      <div class="building-info">
+        <div class="building-name">${b.name}</div>
+        <div class="building-owned">Owned: ${buildingCounts[b.id]}</div>
+        <div class="building-cps">${fmt(cpsEach)} CPS each</div>
+      </div>
+      <div class="building-cost">${fmt(cost)}</div>
+      ${buildingCounts[b.id] > 0 ? `<div class="building-count-badge">${buildingCounts[b.id]}</div>` : ''}
+    `;
+    card.addEventListener('click', () => buyBuilding(b));
+    bl.appendChild(card);
+  });
+
+  // Upgrades
+  const ul = document.getElementById('upgrades-list');
+  ul.innerHTML = '';
+  UPGRADES.forEach(u => {
+    const btn = document.createElement('button');
+    btn.className = 'upgrade-btn' + (u.owned ? ' owned' : '');
+    btn.disabled = u.owned || cookies < u.cost;
+    btn.innerHTML = `
+      <div class="upgrade-icon">${u.icon}</div>
+      <div class="upgrade-info">
+        <div class="upgrade-name">${u.name}</div>
+        <div class="upgrade-desc">${u.desc}</div>
+      </div>
+      <div class="upgrade-cost">${u.owned ? '✓' : fmt(u.cost)}</div>
+    `;
+    if (!u.owned) btn.addEventListener('click', () => buyUpgrade(u));
+    ul.appendChild(btn);
+  });
+
+  // Auto-bakers display
+  const abd = document.getElementById('auto-bakers-display');
+  abd.innerHTML = '';
+  BUILDINGS.forEach(b => {
+    if (buildingCounts[b.id] > 0) {
+      const chip = document.createElement('div');
+      chip.className = 'baker-chip';
+      chip.textContent = `${b.icon} ${b.name} ×${buildingCounts[b.id]}`;
+      abd.appendChild(chip);
+    }
+  });
+
+  checkMilestones();
+}
+
+function checkMilestones() {
+  MILESTONES.forEach(m => {
+    if (totalCookies >= m.at && !unlockedMilestones.has(m.at)) {
+      unlockedMilestones.add(m.at);
+      const ms = document.getElementById('milestones');
+      const badge = document.createElement('div');
+      badge.className = 'milestone-badge';
+      badge.textContent = '🏅 ' + m.label;
+      ms.appendChild(badge);
+      spawnNewsItem(`🏅 Achievement unlocked: ${m.label}`);
+    }
+  });
+}
+
+// ── ACTIONS ────────────────────────────────────────────────────────────────
+function clickCookie(e) {
+  const earned = cookiesPerClick;
+  cookies += earned;
+  totalCookies += earned;
+  spawnParticle(e.clientX, e.clientY, '+' + fmt(earned));
+  renderAll();
+}
+
+function buyBuilding(b) {
+  const cost = buildingCost(b);
+  if (cookies < cost) return;
+  cookies -= cost;
+  buildingCounts[b.id]++;
+  updateCPS();
+  renderAll();
+}
+
+function buyUpgrade(u) {
+  if (cookies < u.cost || u.owned) return;
+  cookies -= u.cost;
+  u.owned = true;
+  u.effect();
+  renderAll();
+}
+
+// ── PARTICLES ──────────────────────────────────────────────────────────────
+function spawnParticle(x, y, text) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.textContent = text;
+  p.style.left = (x - 16) + 'px';
+  p.style.top = (y - 20) + 'px';
+  document.body.appendChild(p);
+  setTimeout(() => p.remove(), 900);
+}
+
+// ── NEWS ───────────────────────────────────────────────────────────────────
+function spawnNewsItem(text) {
+  document.getElementById('ticker-text').textContent = text + ' 🍪 ';
+}
+
+function rotateTicker() {
+  const item = NEWS[Math.floor(Math.random() * NEWS.length)];
+  document.getElementById('ticker-text').textContent = item;
+}
+setInterval(rotateTicker, 22000);
+
+// ── GAME LOOP ──────────────────────────────────────────────────────────────
+function gameLoop() {
+  const now = Date.now();
+  const dt = (now - lastTick) / 1000;
+  lastTick = now;
+  if (cookiesPerSecond > 0) {
+    const earned = cookiesPerSecond * dt;
+    cookies += earned;
+    totalCookies += earned;
+  }
+  renderAll();
+  requestAnimationFrame(gameLoop);
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+document.getElementById('cookie-btn').addEventListener('click', clickCookie);
+updateCPS();
+renderAll();
+requestAnimationFrame(gameLoop);
+</script>
+</body>
+</html>
