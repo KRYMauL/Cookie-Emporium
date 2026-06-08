@@ -655,11 +655,36 @@ function updateCPS() {
 }
 
 // ── RENDER ─────────────────────────────────────────────────────────────────
-function renderAll() {
+
+// Fast: only update text counters — called every animation frame
+function renderCounters() {
   document.getElementById('cookie-count').textContent = fmt(cookies);
   document.getElementById('total-display').textContent = fmt(totalCookies);
   document.getElementById('cps-display').textContent = fmt(cookiesPerSecond) + ' per second';
   document.getElementById('cps-header').textContent = fmt(cookiesPerSecond) + '/s';
+
+  // Update affordability on existing building cards without rebuilding DOM
+  document.querySelectorAll('.building-card').forEach((card, i) => {
+    const b = BUILDINGS[i];
+    const cost = buildingCost(b);
+    card.disabled = cookies < cost;
+    card.querySelector('.building-cost').textContent = fmt(cost);
+  });
+
+  // Update affordability on existing upgrade buttons without rebuilding DOM
+  document.querySelectorAll('.upgrade-btn').forEach((btn, i) => {
+    const u = UPGRADES[i];
+    if (!u.owned) btn.disabled = cookies < u.cost;
+  });
+
+  checkMilestones();
+}
+
+// Slow: full DOM rebuild — only called when structure changes (buy, init)
+let needsFullRender = true;
+function renderAll() {
+  if (!needsFullRender) return;
+  needsFullRender = false;
 
   // Buildings
   const bl = document.getElementById('buildings-list');
@@ -715,8 +740,6 @@ function renderAll() {
       abd.appendChild(chip);
     }
   });
-
-  checkMilestones();
 }
 
 function checkMilestones() {
@@ -739,7 +762,6 @@ function clickCookie(e) {
   cookies += earned;
   totalCookies += earned;
   spawnParticle(e.clientX, e.clientY, '+' + fmt(earned));
-  renderAll();
 }
 
 function buyBuilding(b) {
@@ -748,6 +770,7 @@ function buyBuilding(b) {
   cookies -= cost;
   buildingCounts[b.id]++;
   updateCPS();
+  needsFullRender = true;
   renderAll();
 }
 
@@ -756,6 +779,7 @@ function buyUpgrade(u) {
   cookies -= u.cost;
   u.owned = true;
   u.effect();
+  needsFullRender = true;
   renderAll();
 }
 
@@ -791,13 +815,14 @@ function gameLoop() {
     cookies += earned;
     totalCookies += earned;
   }
-  renderAll();
+  renderCounters();
   requestAnimationFrame(gameLoop);
 }
 
 // ── INIT ───────────────────────────────────────────────────────────────────
 document.getElementById('cookie-btn').addEventListener('click', clickCookie);
 updateCPS();
+needsFullRender = true;
 renderAll();
 requestAnimationFrame(gameLoop);
 </script>
