@@ -1,0 +1,7 @@
+node_modules/
+android/
+*.keystore
+keystore.properties
+*.apk
+*.aab
+.DS_Store
