@@ -1,0 +1,14 @@
+{
+  "appId": "com.cookieemporium.game",
+  "appName": "Cookie Emporium",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "android": {
+    "allowMixedContent": true
+  },
+  "server": {
+    "androidScheme": "http",
+    "url": "http://localhost:8080",
+    "cleartext": true
+  }
+}

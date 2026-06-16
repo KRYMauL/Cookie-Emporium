@@ -1,0 +1,23 @@
+{
+  "name": "cookie-emporium",
+  "version": "1.0.0",
+  "description": "Cookie Emporium - a browser-based cookie clicker game",
+  "scripts": {
+    "start": "http-server www -p 8080 -c-1",
+    "dev": "http-server www -p 8080 -c-1 -o",
+    "sync": "npx cap sync android",
+    "open:android": "npx cap open android",
+    "build:android": "cd android && ./gradlew assembleDebug",
+    "build:android:release": "cd android && ./gradlew assembleRelease",
+    "add:android": "npx cap add android",
+    "dev:android": "npx cap run android --livereload --external --config capacitor.config.dev.json"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/core": "^6.1.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2",
+    "http-server": "^14.1.1"
+  }
+}
