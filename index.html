@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cookie Emporium</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FFF8EE;
+    --caramel: #C8813A;
+    --dark-brown: #3B1F0A;
+    --chocolate: #5C2E00;
+    --gold: #E8A820;
+    --warm-white: #FDF3E3;
+    --shadow-brown: rgba(59,31,10,0.18);
+    --panel-bg: #FEF0D8;
+    --border: #D4A66A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--dark-brown);
+    font-family: 'Lora', Georgia, serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse at 20% 0%, #6B3A1F 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, #4A2210 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* ════════════════════════════════════════
+     MAIN MENU
+  ════════════════════════════════════════ */
+  #main-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+    gap: 0;
+  }
+
+  .menu-cookie {
+    animation: float 3.5s ease-in-out infinite;
+    margin-bottom: 24px;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-10px); }
+  }
+
+  .menu-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: clamp(2.8rem, 8vw, 5rem);
+    color: var(--gold);
+    text-align: center;
+    text-shadow: 3px 4px 0 var(--dark-brown), 0 0 40px rgba(232,168,32,0.3);
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+
+  .menu-subtitle {
+    font-size: 1rem;
+    color: var(--caramel);
+    font-style: italic;
+    margin-top: 10px;
+    margin-bottom: 48px;
+    letter-spacing: 0.1em;
+  }
+
+  .menu-card {
+    background: var(--panel-bg);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 44px;
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .menu-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--caramel), var(--gold), var(--caramel));
+  }
+
+  .menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 24px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.12s, filter 0.12s, border-color 0.15s;
+    letter-spacing: 0.03em;
+  }
+
+  .menu-btn:hover { transform: translateY(-2px); filter: brightness(1.07); }
+  .menu-btn:active { transform: translateY(1px); }
+
+  .menu-btn.primary {
+    background: var(--caramel);
+    color: var(--cream);
+    box-shadow: 0 4px 16px rgba(200,129,58,0.4);
+  }
+
+  .menu-btn.secondary {
+    background: var(--warm-white);
+    color: var(--chocolate);
+    border-color: var(--border);
+  }
+
+  .menu-btn.danger {
+    background: #8B2020;
+    color: #FFD0D0;
+    border-color: #A03030;
+  }
+
+  .menu-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .menu-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 4px 0;
+  }
+
+  .save-slot-preview {
+    background: var(--warm-white);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.8rem;
+    color: #8B6A4A;
+    font-style: italic;
+    text-align: center;
+    margin-top: -6px;
+  }
+
+  .save-slot-preview strong {
+    display: block;
+    font-family: 'Playfair Display', serif;
+    font-style: normal;
+    color: var(--chocolate);
+    font-size: 0.92rem;
+    margin-bottom: 2px;
+  }
+
+  /* ════════════════════════════════════════
+     GAME LAYOUT
+  ════════════════════════════════════════ */
+  #game {
+    display: none;
+    grid-template-columns: 300px 1fr;
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 0;
+  }
+
+  #game.visible { display: grid; }
+
+  /* ── HEADER ── */
+  #header {
+    grid-column: 1 / -1;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 18px var(--shadow-brown);
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  #header h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 1.8rem;
+    color: var(--gold);
+    letter-spacing: 0.04em;
+    text-shadow: 2px 2px 0 var(--dark-brown);
+    white-space: nowrap;
+  }
+
+  #header h1 span { color: var(--cream); }
+
+  #header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  #stats-bar {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .stat-block { text-align: right; }
+
+  .stat-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--caramel);
+    font-style: italic;
+  }
+
+  .stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--cream);
+    font-weight: 700;
+  }
+
+  /* header action buttons */
+  .hdr-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1.5px solid;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s, filter 0.1s;
+    white-space: nowrap;
+  }
+
+  .hdr-btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
+  .hdr-btn:active { transform: translateY(1px); }
+
+  .hdr-btn.save-btn {
+    background: var(--caramel);
+    border-color: var(--gold);
+    color: var(--cream);
+  }
+
+  .hdr-btn.menu-btn-hdr {
+    background: transparent;
+    border-color: rgba(212,166,106,0.5);
+    color: var(--caramel);
+  }
+
+  /* save toast */
+  #save-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--chocolate);
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 10px 24px;
+    border-radius: 30px;
+    border: 2px solid var(--caramel);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    z-index: 10000;
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  #save-toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  /* autosave indicator */
+  #action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  #open-store-btn, #open-achievements-btn {
+    width: 100%;
+    padding: 11px 16px;
+    border-radius: 12px;
+    border: 2px solid var(--caramel);
+    background: var(--chocolate);
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s, filter 0.1s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  #open-store-btn:hover, #open-achievements-btn:hover { background: #7A3A00; filter: brightness(1.1); transform: translateY(-2px); }
+  #open-store-btn:active, #open-achievements-btn:active { transform: translateY(1px); }
+
+  #autosave-indicator {
+    font-size: 0.62rem;
+    color: rgba(212,166,106,0.55);
+    font-style: italic;
+    text-align: center;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── LEFT PANEL ── */
+  #left-panel {
+    background: var(--panel-bg);
+    border-right: 2px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 20px;
+    gap: 18px;
+    position: relative;
+    overflow: hidden;
+    overflow-y: auto;
+  }
+
+  #left-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--caramel), var(--gold), var(--caramel));
+  }
+
+  #cookie-count-display { text-align: center; }
+
+  #cookie-count {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.1rem;
+    font-weight: 900;
+    color: var(--chocolate);
+    line-height: 1;
+  }
+
+  #cookie-count-label {
+    font-size: 0.68rem;
+    color: var(--caramel);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-top: 2px;
+  }
+
+  #cps-display {
+    font-size: 0.83rem;
+    color: #8B5E3C;
+    font-style: italic;
+  }
+
+  /* ── COOKIE BUTTON ── */
+  #cookie-btn {
+    position: relative;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    border: none;
+    background: none;
+    cursor: pointer;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.08s ease;
+    filter: drop-shadow(0 8px 24px rgba(100,40,0,0.35));
+    flex-shrink: 0;
+  }
+
+  #cookie-btn:active { transform: scale(0.91); }
+  #cookie-btn:hover #cookie-svg { filter: brightness(1.08); }
+
+  #cookie-svg {
+    width: 160px; height: 160px;
+    transition: filter 0.15s;
+    animation: float 3.5s ease-in-out infinite;
+  }
+
+  .particle {
+    position: fixed;
+    pointer-events: none;
+    font-size: 1.3rem;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: var(--chocolate);
+    z-index: 9999;
+    animation: rise 0.9s ease-out forwards;
+  }
+
+  @keyframes rise {
+    0%   { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-80px) scale(0.6); }
+  }
+
+  /* ── UPGRADES ── */
+  #upgrades-section { width: 100%; }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--caramel);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+  }
+
+  #upgrades-list { display: flex; flex-direction: column; gap: 7px; }
+
+  .upgrade-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: var(--warm-white);
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s, border-color 0.15s;
+    text-align: left;
+  }
+
+  .upgrade-btn:hover:not(:disabled) { background: #FDEAC8; border-color: var(--caramel); transform: translateX(3px); }
+  .upgrade-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .upgrade-btn.owned { background: #E8F5E2; border-color: #7BBF5A; }
+
+  .upgrade-icon { font-size: 1.5rem; flex-shrink: 0; }
+  .upgrade-info { flex: 1; min-width: 0; }
+
+  .upgrade-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.82rem;
+    color: var(--dark-brown);
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .upgrade-desc { font-size: 0.68rem; color: #8B6A4A; font-style: italic; line-height: 1.3; }
+  .upgrade-cost { font-family: 'Playfair Display', serif; font-size: 0.8rem; font-weight: 700; color: var(--caramel); white-space: nowrap; }
+
+  /* ── CENTER ── */
+  #center-panel {
+    background: var(--cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #center-panel::after {
+    content: '✦ THE GRAND BAKERY ✦';
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    color: rgba(200,129,58,0.4);
+    white-space: nowrap;
+  }
+
+  /* ── ACHIEVEMENTS DRAWER ── */
+  #achievements-panel {
+    position: fixed;
+    top: 0; right: 0;
+    width: 300px;
+    height: 100vh;
+    background: var(--panel-bg);
+    border-left: 2px solid var(--border);
+    padding: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    z-index: 5000;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.34, 1.1, 0.64, 1);
+    box-shadow: -8px 0 32px rgba(0,0,0,0.35);
+  }
+
+  #achievements-panel.ach-open { transform: translateX(0); }
+
+  #achievements-header {
+    background: var(--chocolate);
+    padding: 14px 16px 14px;
+    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  #achievements-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: 0.06em;
+    text-shadow: 1px 1px 0 var(--dark-brown);
+  }
+
+  #achievements-close-btn {
+    background: none;
+    border: none;
+    color: rgba(232,168,32,0.6);
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 6px;
+    transition: color 0.15s, background 0.15s;
+    line-height: 1;
+  }
+
+  #achievements-close-btn:hover { color: var(--gold); background: rgba(255,255,255,0.08); }
+
+  #achievements-progress {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: #8B6A4A;
+    font-style: italic;
+  }
+
+  #achievements-progress-bar-wrap {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    margin-top: 6px;
+    overflow: hidden;
+  }
+
+  #achievements-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--caramel), var(--gold));
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  #achievements-list {
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .achievement-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+  }
+
+  .achievement-row.unlocked {
+    background: #FFFBEF;
+    border-color: var(--gold);
+  }
+
+  .achievement-row.locked {
+    background: var(--warm-white);
+    opacity: 0.45;
+    filter: grayscale(0.4);
+  }
+
+  .achievement-icon { font-size: 1.8rem; flex-shrink: 0; }
+
+  .achievement-info { flex: 1; min-width: 0; }
+
+  .achievement-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--dark-brown);
+  }
+
+  .achievement-req {
+    font-size: 0.68rem;
+    color: #8B6A4A;
+    font-style: italic;
+    margin-top: 1px;
+  }
+
+  .achievement-check {
+    font-size: 1rem;
+    color: var(--gold);
+    flex-shrink: 0;
+  }
+
+  /* achievement unlock toast */
+  #ach-toast {
+    position: fixed;
+    bottom: 72px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--chocolate);
+    border: 2px solid var(--gold);
+    border-radius: 30px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s;
+    white-space: nowrap;
+  }
+
+  #ach-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  #ach-toast-icon { font-size: 1.4rem; }
+  #ach-toast-text { font-family: 'Playfair Display', serif; font-size: 0.88rem; font-weight: 700; color: var(--gold); }
+
+  .milestone-badge {
+    background: var(--gold);
+    color: var(--dark-brown);
+    font-family: 'Playfair Display', serif;
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    animation: badge-pop 0.4s cubic-bezier(0.36,1.56,0.64,1) forwards;
+  }
+
+  @keyframes badge-pop {
+    0%   { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  #auto-bakers-display {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    max-width: 320px;
+  }
+
+  .baker-chip {
+    background: var(--panel-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    color: var(--chocolate);
+    font-style: italic;
+  }
+
+  #news-ticker {
+    position: absolute;
+    bottom: 32px;
+    left: 0; right: 0;
+    overflow: hidden;
+    height: 22px;
+  }
+
+  #ticker-text {
+    white-space: nowrap;
+    font-size: 0.72rem;
+    color: var(--caramel);
+    font-style: italic;
+    display: inline-block;
+    animation: ticker 22s linear infinite;
+  }
+
+  @keyframes ticker {
+    0%   { transform: translateX(100vw); }
+    100% { transform: translateX(-100%); }
+  }
+
+  /* ── RIGHT PANEL ── */
+  #right-panel {
+    position: fixed;
+    top: 0; right: 0;
+    width: 300px;
+    height: 100vh;
+    background: var(--panel-bg);
+    border-left: 2px solid var(--border);
+    padding: 0 0 24px 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    z-index: 5000;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.34, 1.1, 0.64, 1);
+    box-shadow: -8px 0 32px rgba(0,0,0,0.35);
+  }
+
+  #right-panel.store-open {
+    transform: translateX(0);
+  }
+
+  /* backdrop */
+  #store-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20,8,2,0.5);
+    z-index: 4999;
+    backdrop-filter: blur(2px);
+  }
+
+  #store-backdrop.show { display: block; }
+
+  #store-header {
+    background: var(--chocolate);
+    padding: 14px 16px 0;
+    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #store-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  #store-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: 0.06em;
+    text-shadow: 1px 1px 0 var(--dark-brown);
+  }
+
+  #store-close-btn {
+    background: none;
+    border: none;
+    color: rgba(232,168,32,0.6);
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 6px;
+    transition: color 0.15s, background 0.15s;
+    line-height: 1;
+  }
+
+  #store-close-btn:hover { color: var(--gold); background: rgba(255,255,255,0.08); }
+
+  #buildings-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding: 0 16px; }
+
+  .building-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: var(--warm-white);
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s, border-color 0.15s;
+    position: relative;
+    overflow: hidden;
+    text-align: left;
+  }
+
+  .building-card:hover:not(:disabled) { background: #FDEAC8; border-color: var(--caramel); transform: translateX(-3px); }
+  .building-card:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .building-icon { font-size: 1.7rem; flex-shrink: 0; }
+  .building-info { flex: 1; min-width: 0; }
+  .building-name { font-family: 'Playfair Display', serif; font-size: 0.85rem; color: var(--dark-brown); font-weight: 700; }
+  .building-owned { font-size: 0.68rem; color: #8B6A4A; font-style: italic; }
+  .building-cps { font-size: 0.67rem; color: #A0845C; }
+  .building-cost { font-family: 'Playfair Display', serif; font-size: 0.85rem; font-weight: 700; color: var(--caramel); text-align: right; }
+
+  .building-count-badge {
+    position: absolute;
+    top: 6px; right: 6px;
+    background: var(--chocolate);
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* scrollbar */
+  #right-panel::-webkit-scrollbar,
+  #left-panel::-webkit-scrollbar { width: 5px; }
+  #right-panel::-webkit-scrollbar-track,
+  #left-panel::-webkit-scrollbar-track { background: var(--panel-bg); }
+  #right-panel::-webkit-scrollbar-thumb,
+  #left-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── STORE TABS ── */
+  #store-tabs {
+    display: flex;
+    border-bottom: none;
+    margin-bottom: 0;
+    position: static;
+    background: transparent;
+    z-index: auto;
+    padding-top: 0;
+  }
+
+  .store-tab {
+    flex: 1;
+    padding: 8px 8px 10px;
+    border: none;
+    border-bottom: 3px solid transparent;
+    background: transparent;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: rgba(232,168,32,0.5);
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+    letter-spacing: 0.03em;
+  }
+
+  .store-tab:hover { color: var(--gold); }
+  .store-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  .tab-panel { display: none; padding: 0 16px; }
+  .tab-panel.active { display: block; }
+
+  .store-sub-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--caramel);
+    padding: 12px 0 6px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+
+  #upgrades-owned-list { opacity: 0.6; }
+
+  /* ── MODAL ── */
+  #modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20,8,2,0.75);
+    z-index: 20000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(3px);
+  }
+
+  #modal-overlay.show { display: flex; }
+
+  .modal-box {
+    background: var(--panel-bg);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 36px;
+    max-width: 380px;
+    width: 90%;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+    text-align: center;
+    position: relative;
+  }
+
+  .modal-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    border-radius: 16px 16px 0 0;
+    background: linear-gradient(90deg, #8B2020, #C03030, #8B2020);
+  }
+
+  .modal-icon { font-size: 2.5rem; margin-bottom: 12px; }
+
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--dark-brown);
+    margin-bottom: 8px;
+  }
+
+  .modal-body {
+    font-size: 0.88rem;
+    color: #8B6A4A;
+    font-style: italic;
+    line-height: 1.5;
+    margin-bottom: 24px;
+  }
+
+  .modal-actions { display: flex; gap: 12px; justify-content: center; }
+
+  .modal-btn {
+    padding: 10px 24px;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s, filter 0.1s;
+  }
+
+  .modal-btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+  .modal-btn.confirm { background: #8B2020; color: #FFD0D0; border-color: #A03030; }
+  .modal-btn.cancel  { background: var(--warm-white); color: var(--chocolate); border-color: var(--border); }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     MAIN MENU
+══════════════════════════════════════ -->
+<div id="main-menu">
+  <div class="menu-cookie">
+    <svg width="120" height="120" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="90" fill="#C8813A"/>
+      <circle cx="100" cy="100" r="85" fill="none" stroke="#B5712E" stroke-width="2" stroke-dasharray="8 6"/>
+      <circle cx="100" cy="100" r="75" fill="#D4924D" opacity="0.5"/>
+      <ellipse cx="72" cy="62" rx="22" ry="14" fill="#E8A356" opacity="0.4" transform="rotate(-25 72 62)"/>
+      <ellipse cx="68" cy="78"  rx="9" ry="7" fill="#3B1A08" transform="rotate(-15 68 78)"/>
+      <ellipse cx="115" cy="65" rx="8" ry="6" fill="#3B1A08" transform="rotate(20 115 65)"/>
+      <ellipse cx="88" cy="120" rx="10" ry="7" fill="#3B1A08" transform="rotate(-10 88 120)"/>
+      <ellipse cx="130" cy="108" rx="8" ry="6" fill="#3B1A08" transform="rotate(30 130 108)"/>
+      <ellipse cx="60" cy="125"  rx="7" ry="5" fill="#3B1A08" transform="rotate(10 60 125)"/>
+      <ellipse cx="135" cy="145" rx="9" ry="6" fill="#3B1A08" transform="rotate(-20 135 145)"/>
+    </svg>
+  </div>
+
+  <div class="menu-title">Cookie<br>Emporium</div>
+  <div class="menu-subtitle">A Grand Bakery Adventure</div>
+
+  <div class="menu-card">
+    <button class="menu-btn primary" id="btn-new-game">🍪 New Game</button>
+    <button class="menu-btn secondary" id="btn-continue" disabled>▶ Continue</button>
+    <div id="save-preview" class="save-slot-preview" style="display:none"></div>
+    <hr class="menu-divider">
+    <button class="menu-btn danger" id="btn-delete-save" disabled>🗑 Delete Save</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     GAME
+══════════════════════════════════════ -->
+<div id="game">
+
+  <!-- HEADER -->
+  <div id="header">
+    <h1>🍪 Cookie <span>Emporium</span></h1>
+    <div id="header-right">
+      <div id="stats-bar">
+        <div class="stat-block">
+          <div class="stat-label">All Time</div>
+          <div class="stat-value" id="total-display">0</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-label">Per Second</div>
+          <div class="stat-value" id="cps-header">0</div>
+        </div>
+      </div>
+      <button class="hdr-btn save-btn" id="btn-save">💾 Save</button>
+      <button class="hdr-btn menu-btn-hdr" id="btn-to-menu">☰ Menu</button>
+    </div>
+  </div>
+
+  <!-- LEFT: clicker + upgrades -->
+  <div id="left-panel">
+    <div id="cookie-count-display">
+      <div id="cookie-count">0</div>
+      <div id="cookie-count-label">Cookies in Jar</div>
+      <div id="cps-display">0 per second</div>
+    </div>
+
+    <button id="cookie-btn" title="Click me!">
+      <svg id="cookie-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="90" fill="#C8813A"/>
+        <circle cx="100" cy="100" r="85" fill="none" stroke="#B5712E" stroke-width="2" stroke-dasharray="8 6"/>
+        <circle cx="100" cy="100" r="75" fill="#D4924D" opacity="0.5"/>
+        <ellipse cx="72" cy="62" rx="22" ry="14" fill="#E8A356" opacity="0.4" transform="rotate(-25 72 62)"/>
+        <ellipse cx="68" cy="78"  rx="9" ry="7" fill="#3B1A08" transform="rotate(-15 68 78)"/>
+        <ellipse cx="115" cy="65" rx="8" ry="6" fill="#3B1A08" transform="rotate(20 115 65)"/>
+        <ellipse cx="88" cy="120" rx="10" ry="7" fill="#3B1A08" transform="rotate(-10 88 120)"/>
+        <ellipse cx="130" cy="108" rx="8" ry="6" fill="#3B1A08" transform="rotate(30 130 108)"/>
+        <ellipse cx="60" cy="125"  rx="7" ry="5" fill="#3B1A08" transform="rotate(10 60 125)"/>
+        <ellipse cx="135" cy="145" rx="9" ry="6" fill="#3B1A08" transform="rotate(-20 135 145)"/>
+        <ellipse cx="105" cy="148" rx="7" ry="5" fill="#4A2210" transform="rotate(5 105 148)"/>
+        <circle cx="70" cy="76" r="2.5" fill="#7A3F1A" opacity="0.6"/>
+        <circle cx="116" cy="63" r="2"   fill="#7A3F1A" opacity="0.6"/>
+        <circle cx="89" cy="118" r="3"   fill="#7A3F1A" opacity="0.6"/>
+        <circle cx="131" cy="106" r="2"  fill="#7A3F1A" opacity="0.6"/>
+        <path d="M 40 70 Q 50 75 42 82"   fill="none" stroke="#A06528" stroke-width="1.5" opacity="0.5"/>
+        <path d="M 155 120 Q 162 128 158 138" fill="none" stroke="#A06528" stroke-width="1.5" opacity="0.5"/>
+      </svg>
+    </button>
+
+    <div id="action-buttons">
+      <button id="open-store-btn">🛒 Store</button>
+      <button id="open-achievements-btn">🏅 Achievements</button>
+    </div>
+
+    <div id="autosave-indicator"></div>
+  </div>
+
+  <!-- CENTER -->
+  <div id="center-panel">
+    <div id="auto-bakers-display"></div>
+    <div id="news-ticker">
+      <span id="ticker-text">🍪 Welcome to the Cookie Emporium! Click the cookie to begin baking…</span>
+    </div>
+  </div>
+
+  <!-- ACHIEVEMENTS DRAWER -->
+  <div id="achievements-panel">
+    <div id="achievements-header">
+      <div id="achievements-title">🏅 Achievements</div>
+      <button id="achievements-close-btn" title="Close">✕</button>
+    </div>
+    <div id="achievements-progress">
+      <span id="achievements-count">0 / 7 unlocked</span>
+      <div id="achievements-progress-bar-wrap">
+        <div id="achievements-progress-bar" style="width:0%"></div>
+      </div>
+    </div>
+    <div id="achievements-list"></div>
+  </div>
+
+  <!-- ACHIEVEMENT TOAST -->
+  <div id="ach-toast">
+    <div id="ach-toast-icon">🏅</div>
+    <div id="ach-toast-text">Achievement Unlocked!</div>
+  </div>
+
+  <!-- STORE BACKDROP -->
+  <div id="store-backdrop"></div>
+
+  <!-- RIGHT: store drawer -->
+  <div id="right-panel">
+    <div id="store-header">
+      <div id="store-header-top">
+        <div id="store-title">🛒 Store</div>
+        <button id="store-close-btn" title="Close store">✕</button>
+      </div>
+      <div id="store-tabs">
+        <button class="store-tab active" data-tab="buildings">🏗 Buildings</button>
+        <button class="store-tab" data-tab="upgrades">⚗️ Upgrades</button>
+      </div>
+    </div>
+
+    <div id="tab-buildings" class="tab-panel active">
+      <div id="buildings-list"></div>
+    </div>
+
+    <div id="tab-upgrades" class="tab-panel">
+      <div id="upgrades-available">
+        <div class="store-sub-title">Available</div>
+        <div id="upgrades-list"></div>
+      </div>
+      <div id="upgrades-owned-section">
+        <div class="store-sub-title">Owned</div>
+        <div id="upgrades-owned-list"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SAVE TOAST -->
+<div id="save-toast">💾 Game Saved!</div>
+
+<!-- CONFIRM MODAL -->
+<div id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-icon">⚠️</div>
+    <div class="modal-title" id="modal-title">Are you sure?</div>
+    <div class="modal-body" id="modal-body">This action cannot be undone.</div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" id="modal-cancel">Cancel</button>
+      <button class="modal-btn confirm" id="modal-confirm">Confirm</button>
+    </div>
+  </div>
+</div>
+
+
+<script src="js/data.js"></script>
+<script src="js/state.js"></script>
+<script src="js/save.js"></script>
+<script src="js/render.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>
